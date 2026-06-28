@@ -80,7 +80,7 @@ function send() {
   msgs.push({role:'user', content: text}); showTyping();
   fetch('https://afterfade-proxy.7cbc8n4p86.workers.dev/', {
     method: 'POST',
-    headers: {'Content-Type':'application/json','x-api-key':APIKEY,'anthropic-version':'2023-06-01'},
+   headers: {'Content-Type':'application/json'},
     body: JSON.stringify({model:'claude-sonnet-4-6', max_tokens:1000, system:SYS, messages:msgs})
   })
   .then(function(r){return r.json();})
