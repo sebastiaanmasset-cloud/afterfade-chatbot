@@ -78,7 +78,7 @@ function send() {
   var text = inp.value.trim(); if (!text) return;
   inp.value = ''; addMsg('user', text);
   msgs.push({role:'user', content: text}); showTyping();
-  fetch('https://api.anthropic.com/v1/messages', {
+  fetch('https://afterfade-proxy.7cbc8n4p86.workers.dev/', {
     method: 'POST',
     headers: {'Content-Type':'application/json','x-api-key':APIKEY,'anthropic-version':'2023-06-01'},
     body: JSON.stringify({model:'claude-sonnet-4-6', max_tokens:1000, system:SYS, messages:msgs})
