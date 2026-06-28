@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f3; height: 100vh; display: flex; flex-direction: column; }
+#header { background: #1a1a1a; color: #fff; padding: 14px 16px; display: flex; align-items: center; gap: 10px; }
+.av { width: 36px; height: 36px; border-radius: 50%; background: #e0a800; color: #1a1a1a; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; flex-shrink: 0; }
+.hname { font-size: 14px; font-weight: 600; }
+.hstatus { font-size: 11px; color: #aaa; }
+#messages { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.msg { display: flex; gap: 7px; align-items: flex-end; }
+.msg.user { flex-direction: row-reverse; }
+.bubble { max-width: 78%; padding: 9px 13px; border-radius: 16px; font-size: 13.5px; line-height: 1.5; }
+.msg.bot .bubble { background: #fff; border: 1px solid #e5e5e3; border-bottom-left-radius: 4px; color: #1a1a1a; }
+.msg.user .bubble { background: #1a1a1a; color: #fff; border-bottom-right-radius: 4px; }
+.mav { width: 26px; height: 26px; border-radius: 50%; background: #e0a800; color: #1a1a1a; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.typing { display: flex; align-items: center; gap: 4px; padding: 9px 13px; background: #fff; border: 1px solid #e5e5e3; border-radius: 16px; border-bottom-left-radius: 4px; }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: #999; animation: bn 1.2s infinite; }
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+@keyframes bn{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+#qbtns { padding: 8px 12px; display: flex; flex-wrap: wrap; gap: 5px; background: #f5f5f3; border-top: 1px solid #e5e5e3; }
+.qb { font-size: 11.5px; padding: 5px 10px; border: 1px solid #ccc; border-radius: 20px; background: #fff; color: #444; cursor: pointer; }
+.qb:hover { background: #f0f0ee; }
+#irow { display: flex; gap: 8px; padding: 10px 12px; border-top: 1px solid #e5e5e3; background: #fff; }
+#inp { flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 20px; font-size: 13.5px; background: #f9f9f7; color: #1a1a1a; outline: none; }
+#snd { width: 36px; height: 36px; border-radius: 50%; background: #1a1a1a; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+#snd svg { width: 16px; height: 16px; fill: #fff; }
+#foot { text-align: center; font-size: 10px; color: #aaa; padding: 5px; background: #fff; border-top: 1px solid #eee; }
+</style>
+</head>
+<body>
+<div id="header">
+  <div class="av">AF</div>
+  <div>
+    <div class="hname">Afterfade Assistent</div>
+    <div class="hstatus">Online - Reageert meteen</div>
+  </div>
+</div>
+<div id="messages"></div>
+<div id="qbtns">
+  <button class="qb" onclick="sq('Welke producten verkopen jullie?')">Producten & prijzen</button>
+  <button class="qb" onclick="sq('Wat is het verschil tussen coaten en herlakken?')">Coaten vs herlakken</button>
+  <button class="qb" onclick="sq('Hoe breng ik Afterfade aan?')">Gebruik</button>
+  <button class="qb" onclick="sq('Ik wil een offerte aanvragen')">Offerte aanvragen</button>
+</div>
+<div id="irow">
+  <input id="inp" type="text" placeholder="Stel een vraag..." />
+  <button id="snd"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></button>
+</div>
+<div id="foot">Aangedreven door Afterfade AI</div>
+<script>
+var msgs = [];
+var APIKEY = 'PLAK-HIER-JE-SLEUTEL';
+var SYS = 'Je bent de vriendelijke klantenservice assistent van Afterfade (www.afterfade.be). Afterfade is een Belgisch bedrijf in Paal dat professionele kleurherstel- en restauratiecoating aanbiedt voor aluminium, PVC en poedercoat.\n\nPRODUCTEN:\n- Afterfade PRO+ complete kit: 79,95 euro (normaal 94,70 euro), meest gekozen, gratis verzending, tot 5 jaar resultaat\n- 2x Afterfade PRO+ kit: 139,40 euro (bespaar 50 euro)\n- Afterfade Pro-Tech+ 250ml: 59,95 euro\n- Afterfade Prep+ reiniger 500ml: 14,95 euro\n- Applicator: 4,95 euro\n- Microvezeldoek: 4,95 euro\n- Gratis verzending vanaf 60 euro, volgende werkdag geleverd.\n\nDIENST 1 - COATEN:\n- Herstelt kleur en glans van verkleurde/doffe oppervlakken\n- Tot 90% goedkoper dan vervangen\n- Zelf aan te brengen of professioneel\n- GESCHIKT voor: verkleurde, doffe oppervlakken ZONDER krassen\n- NIET geschikt voor: krassen, stootschade, inbraakschade\n- Resultaat tot 5 jaar\n\nDIENST 2 - LAKWERKEN OP LOCATIE:\n- Herstelt krassen, stootschade en inbraakschade\n- Kleurwijziging mogelijk\n- Alleen professioneel\n- Prijs op maat via WhatsApp\n\nWANNEER WAT:\n- Dof/verkleurd zonder schade: coating\n- Krassen of schade: herlakken\n- Nieuwe kleur: herlakken\n- Twijfel: foto via WhatsApp\n\nCONTACT: WhatsApp +32499143696, info@afterfade.be\n\nAntwoord in het Nederlands, vriendelijk en bondig. Bij offertes en twijfel: doorverwijzen naar WhatsApp.';
+
+function addMsg(role, text) {
+  var div = document.getElementById('messages');
+  var wrap = document.createElement('div');
+  wrap.className = 'msg ' + role;
+  if (role === 'bot') { var a = document.createElement('div'); a.className = 'mav'; a.textContent = 'AF'; wrap.appendChild(a); }
+  var b = document.createElement('div'); b.className = 'bubble'; b.textContent = text;
+  wrap.appendChild(b); div.appendChild(wrap); div.scrollTop = div.scrollHeight;
+}
+function showTyping() {
+  var div = document.getElementById('messages');
+  var w = document.createElement('div'); w.className = 'msg bot'; w.id = 'typ';
+  var a = document.createElement('div'); a.className = 'mav'; a.textContent = 'AF';
+  var t = document.createElement('div'); t.className = 'typing';
+  t.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+  w.appendChild(a); w.appendChild(t); div.appendChild(w); div.scrollTop = div.scrollHeight;
+}
+function removeTyping() { var t = document.getElementById('typ'); if (t) t.remove(); }
+function send() {
+  var inp = document.getElementById('inp');
+  var text = inp.value.trim(); if (!text) return;
+  inp.value = ''; addMsg('user', text);
+  msgs.push({role:'user', content: text}); showTyping();
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json','x-api-key':APIKEY,'anthropic-version':'2023-06-01'},
+    body: JSON.stringify({model:'claude-sonnet-4-6', max_tokens:1000, system:SYS, messages:msgs})
+  })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    var reply = (data.content && data.content[0] && data.content[0].text) || 'Sorry, probeer opnieuw.';
+    msgs.push({role:'assistant', content:reply}); removeTyping(); addMsg('bot', reply);
+  })
+  .catch(function(){ removeTyping(); addMsg('bot','Verbindingsfout. Contacteer ons via info@afterfade.be of WhatsApp +32499143696.'); });
+}
+function sq(q) { document.getElementById('inp').value = q; send(); }
+document.getElementById('snd').addEventListener('click', send);
+document.getElementById('inp').addEventListener('keydown', function(e){if(e.key==='Enter')send();});
+addMsg('bot', 'Hallo! Ik ben de Afterfade assistent. Waarmee kan ik je helpen?');
+</script>
+</body>
+</html>
